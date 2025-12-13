@@ -28,4 +28,4 @@ np.savez_compressed(output_npz, *arrays_list)
 
 elapsed = time.perf_counter() - start
 print(f"All done! NPZ saved at: {output_npz}")
-print(f"Elapsed time: {elapsed/60:.2f} minute")
+print(f"Elapsed time: {elapsed/60:.2f} minutes")
