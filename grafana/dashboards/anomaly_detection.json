@@ -1,0 +1,167 @@
+{
+  "__inputs": [],
+  "__requires": [],
+  "annotations": { "list": [] },
+  "description": "AI-Augmented Network Anomaly Detection — LSTM Autoencoder on CESNET Traffic",
+  "editable": true,
+  "graphTooltip": 1,
+  "id": null,
+  "links": [],
+  "panels": [
+
+    { "datasource": { "type": "prometheus", "uid": "prometheus" },
+      "fieldConfig": { "defaults": { "color": { "mode": "thresholds" }, "thresholds": { "mode": "absolute", "steps": [{ "color": "green", "value": null }, { "color": "red", "value": 1 }] }, "mappings": [{ "options": { "0": { "text": "NORMAL" }, "1": { "text": "ANOMALY" } }, "type": "value" }] } },
+      "gridPos": { "h": 5, "w": 4, "x": 0, "y": 0 }, "id": 1,
+      "options": { "reduceOptions": { "calcs": ["lastNotNull"] }, "colorMode": "background", "textMode": "auto", "orientation": "auto" },
+      "title": "Network Status", "type": "stat",
+      "targets": [{ "expr": "sum(network_is_anomaly)", "legendFormat": "Status", "refId": "A" }]
+    },
+
+    { "datasource": { "type": "prometheus", "uid": "prometheus" },
+      "fieldConfig": { "defaults": { "color": { "mode": "thresholds" }, "thresholds": { "mode": "absolute", "steps": [{ "color": "green", "value": null }, { "color": "yellow", "value": 0.001 }, { "color": "red", "value": 0.005 }] }, "unit": "short", "decimals": 6 } },
+      "gridPos": { "h": 5, "w": 5, "x": 4, "y": 0 }, "id": 2,
+      "options": { "reduceOptions": { "calcs": ["lastNotNull"] }, "colorMode": "background", "textMode": "value_and_name" },
+      "title": "Anomaly Score", "type": "stat",
+      "targets": [{ "expr": "sum(network_anomaly_score)", "legendFormat": "Score", "refId": "A" }]
+    },
+
+    { "datasource": { "type": "prometheus", "uid": "prometheus" },
+      "fieldConfig": { "defaults": { "color": { "mode": "thresholds" }, "thresholds": { "mode": "absolute", "steps": [{ "color": "blue", "value": null }] }, "unit": "short", "decimals": 6 } },
+      "gridPos": { "h": 5, "w": 4, "x": 9, "y": 0 }, "id": 9,
+      "options": { "reduceOptions": { "calcs": ["lastNotNull"] }, "colorMode": "value", "textMode": "value_and_name" },
+      "title": "Detection Threshold", "type": "stat",
+      "targets": [{ "expr": "sum(network_anomaly_threshold)", "legendFormat": "Threshold", "refId": "A" }]
+    },
+
+    { "datasource": { "type": "prometheus", "uid": "prometheus" },
+      "fieldConfig": { "defaults": { "color": { "mode": "thresholds" }, "thresholds": { "mode": "absolute", "steps": [{ "color": "orange", "value": null }] }, "unit": "short" } },
+      "gridPos": { "h": 5, "w": 4, "x": 13, "y": 0 }, "id": 3,
+      "options": { "reduceOptions": { "calcs": ["lastNotNull"] }, "colorMode": "value", "textMode": "auto" },
+      "title": "Total Anomalies", "type": "stat",
+      "targets": [{ "expr": "sum(network_anomalies_total)", "legendFormat": "Anomalies", "refId": "A" }]
+    },
+
+    { "datasource": { "type": "prometheus", "uid": "prometheus" },
+      "fieldConfig": { "defaults": { "color": { "mode": "thresholds" }, "thresholds": { "mode": "absolute", "steps": [{ "color": "green", "value": null }, { "color": "yellow", "value": 5 }, { "color": "red", "value": 15 }] }, "unit": "percent", "decimals": 1 } },
+      "gridPos": { "h": 5, "w": 4, "x": 17, "y": 0 }, "id": 10,
+      "options": { "reduceOptions": { "calcs": ["lastNotNull"] }, "colorMode": "background", "textMode": "auto" },
+      "title": "Anomaly Rate %", "type": "stat",
+      "targets": [{ "expr": "sum(network_anomalies_total) / sum(network_samples_processed_total) * 100", "legendFormat": "Rate %", "refId": "A" }]
+    },
+
+    { "datasource": { "type": "prometheus", "uid": "prometheus" },
+      "fieldConfig": { "defaults": { "color": { "mode": "palette-classic" }, "custom": { "lineWidth": 2, "fillOpacity": 8 }, "unit": "short", "decimals": 6 },
+        "overrides": [
+          { "matcher": { "id": "byName", "options": "Anomaly Score" }, "properties": [{ "id": "color", "value": { "fixedColor": "#F2495C", "mode": "fixed" } }, { "id": "custom.lineWidth", "value": 2 }] },
+          { "matcher": { "id": "byName", "options": "Threshold" }, "properties": [{ "id": "color", "value": { "fixedColor": "#FF9830", "mode": "fixed" } }, { "id": "custom.lineStyle", "value": { "dash": [8, 4], "fill": "dash" } }, { "id": "custom.lineWidth", "value": 2 }, { "id": "custom.fillOpacity", "value": 0 }] }
+        ]
+      },
+      "gridPos": { "h": 9, "w": 24, "x": 0, "y": 5 }, "id": 5,
+      "options": { "tooltip": { "mode": "multi" } },
+      "title": "Anomaly Score vs Threshold — LSTM Reconstruction Error", "type": "timeseries",
+      "targets": [
+        { "expr": "sum(network_anomaly_score)",     "legendFormat": "Anomaly Score", "refId": "A" },
+        { "expr": "sum(network_anomaly_threshold)", "legendFormat": "Threshold",     "refId": "B" }
+      ]
+    },
+
+    { "datasource": { "type": "prometheus", "uid": "prometheus" },
+      "fieldConfig": { "defaults": { "color": { "mode": "palette-classic" }, "custom": { "lineWidth": 1, "fillOpacity": 6 }, "unit": "short" } },
+      "gridPos": { "h": 8, "w": 8, "x": 0, "y": 14 }, "id": 6,
+      "title": "Network Flows", "type": "timeseries",
+      "targets": [{ "expr": "sum(network_n_flows)", "legendFormat": "Flows / window", "refId": "A" }]
+    },
+
+    { "datasource": { "type": "prometheus", "uid": "prometheus" },
+      "fieldConfig": { "defaults": { "color": { "mode": "palette-classic" }, "custom": { "lineWidth": 1, "fillOpacity": 6 }, "unit": "short" } },
+      "gridPos": { "h": 8, "w": 8, "x": 8, "y": 14 }, "id": 11,
+      "title": "Packets", "type": "timeseries",
+      "targets": [{ "expr": "sum(network_n_packets)", "legendFormat": "Packets / window", "refId": "A" }]
+    },
+
+    { "datasource": { "type": "prometheus", "uid": "prometheus" },
+      "fieldConfig": { "defaults": { "color": { "mode": "palette-classic" }, "custom": { "lineWidth": 1, "fillOpacity": 6 }, "unit": "bytes" } },
+      "gridPos": { "h": 8, "w": 8, "x": 16, "y": 14 }, "id": 7,
+      "title": "Bytes Transferred", "type": "timeseries",
+      "targets": [{ "expr": "sum(network_n_bytes)", "legendFormat": "Bytes / window", "refId": "A" }]
+    },
+
+    { "datasource": { "type": "prometheus", "uid": "prometheus" },
+      "fieldConfig": { "defaults": { "color": { "mode": "palette-classic" }, "custom": { "lineWidth": 2, "fillOpacity": 8 } },
+        "overrides": [
+          { "matcher": { "id": "byName", "options": "TCP/UDP Packets" }, "properties": [{ "id": "color", "value": { "fixedColor": "#5794F2", "mode": "fixed" } }] },
+          { "matcher": { "id": "byName", "options": "TCP/UDP Bytes" },   "properties": [{ "id": "color", "value": { "fixedColor": "#B877D9", "mode": "fixed" } }] }
+        ]
+      },
+      "gridPos": { "h": 8, "w": 12, "x": 0, "y": 22 }, "id": 12,
+      "title": "TCP vs UDP Ratio  (>1 = TCP dominant, spike = unusual protocol shift)", "type": "timeseries",
+      "targets": [
+        { "expr": "sum(network_tcp_udp_ratio_packets)", "legendFormat": "TCP/UDP Packets", "refId": "A" },
+        { "expr": "sum(network_tcp_udp_ratio_bytes)",   "legendFormat": "TCP/UDP Bytes",   "refId": "B" }
+      ]
+    },
+
+    { "datasource": { "type": "prometheus", "uid": "prometheus" },
+      "fieldConfig": { "defaults": { "color": { "mode": "palette-classic" }, "custom": { "lineWidth": 2, "fillOpacity": 8 } },
+        "overrides": [
+          { "matcher": { "id": "byName", "options": "Dir Ratio Packets" }, "properties": [{ "id": "color", "value": { "fixedColor": "#E0B400", "mode": "fixed" } }] },
+          { "matcher": { "id": "byName", "options": "Dir Ratio Bytes" },   "properties": [{ "id": "color", "value": { "fixedColor": "#FF7383", "mode": "fixed" } }] }
+        ]
+      },
+      "gridPos": { "h": 8, "w": 12, "x": 12, "y": 22 }, "id": 13,
+      "title": "Traffic Direction Ratio  (asymmetry = possible attack/exfiltration)", "type": "timeseries",
+      "targets": [
+        { "expr": "sum(network_dir_ratio_packets)", "legendFormat": "Dir Ratio Packets", "refId": "A" },
+        { "expr": "sum(network_dir_ratio_bytes)",   "legendFormat": "Dir Ratio Bytes",   "refId": "B" }
+      ]
+    },
+
+    { "datasource": { "type": "prometheus", "uid": "prometheus" },
+      "fieldConfig": { "defaults": { "color": { "mode": "palette-classic" }, "custom": { "lineWidth": 2, "fillOpacity": 8 } },
+        "overrides": [
+          { "matcher": { "id": "byName", "options": "Avg Dest IPs" },   "properties": [{ "id": "color", "value": { "fixedColor": "#73BF69", "mode": "fixed" } }] },
+          { "matcher": { "id": "byName", "options": "Avg Dest Ports" }, "properties": [{ "id": "color", "value": { "fixedColor": "#F2495C", "mode": "fixed" } }] }
+        ]
+      },
+      "gridPos": { "h": 8, "w": 12, "x": 0, "y": 30 }, "id": 14,
+      "title": "Destination Diversity  (spike in IPs/Ports = scanning activity)", "type": "timeseries",
+      "targets": [
+        { "expr": "sum(network_avg_dest_ip)",    "legendFormat": "Avg Dest IPs",   "refId": "A" },
+        { "expr": "sum(network_avg_dest_ports)", "legendFormat": "Avg Dest Ports", "refId": "B" }
+      ]
+    },
+
+    { "datasource": { "type": "prometheus", "uid": "prometheus" },
+      "fieldConfig": { "defaults": { "color": { "mode": "palette-classic" }, "custom": { "lineWidth": 2, "fillOpacity": 8 } },
+        "overrides": [
+          { "matcher": { "id": "byName", "options": "Avg Duration (s)" }, "properties": [{ "id": "color", "value": { "fixedColor": "#56A64B", "mode": "fixed" } }] },
+          { "matcher": { "id": "byName", "options": "Avg TTL" },          "properties": [{ "id": "color", "value": { "fixedColor": "#FA6400", "mode": "fixed" } }] }
+        ]
+      },
+      "gridPos": { "h": 8, "w": 12, "x": 12, "y": 30 }, "id": 15,
+      "title": "Flow Duration & TTL  (short duration + low TTL = suspicious probing)", "type": "timeseries",
+      "targets": [
+        { "expr": "sum(network_avg_duration)", "legendFormat": "Avg Duration (s)", "refId": "A" },
+        { "expr": "sum(network_avg_ttl)",      "legendFormat": "Avg TTL",          "refId": "B" }
+      ]
+    },
+
+    { "datasource": { "type": "prometheus", "uid": "prometheus" },
+      "fieldConfig": { "defaults": { "color": { "mode": "thresholds" }, "thresholds": { "mode": "absolute", "steps": [{ "color": "green", "value": null }, { "color": "red", "value": 1 }] }, "custom": { "lineWidth": 2, "fillOpacity": 20 } } },
+      "gridPos": { "h": 6, "w": 24, "x": 0, "y": 38 }, "id": 8,
+      "title": "Anomaly Timeline  (1 = ANOMALY detected, 0 = NORMAL)", "type": "timeseries",
+      "targets": [{ "expr": "sum(network_is_anomaly)", "legendFormat": "Anomaly Flag", "refId": "A" }]
+    }
+
+  ],
+  "refresh": "5s",
+  "schemaVersion": 38,
+  "tags": ["network", "anomaly", "lstm", "cesnet"],
+  "templating": { "list": [] },
+  "time": { "from": "now-5m", "to": "now" },
+  "timepicker": {},
+  "timezone": "browser",
+  "title": "Network Anomaly Detection",
+  "uid": "network-anomaly-v1",
+  "version": 3
+}
